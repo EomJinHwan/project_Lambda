@@ -14,4 +14,5 @@ db를 레이어로 사용 하여 /opt/nodejs/db 경로가 됌
 기존 코드와 다른점
 
 요청 본문 처리방식 - 기존: req.body  / 람다: JSON.parse(event.body)
+
 응답 형식 방식 - 기존: res.status().json() / 람다: return { statusCode, body }
