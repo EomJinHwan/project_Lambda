@@ -1,16 +1,12 @@
-const pool = require('/opt/nodejs/db');
 const bcrypt = require('bcryptjs');
+const { SELECT, hashPassword, UPDATE } = require('/opt/nodejs/query');
 
 exports.handler = async (event) => {
     const { userId, newPw } = JSON.parse(event.body);
 
     try {
         // 기존 비밀번호 조회
-        const query = "SELECT userPw FROM member WHERE userId = ?";
-        const values = [userId];
-        const [result] = await pool.promise().query(query, values);
-
-        const currentHashedPw = result[0].userPw;
+        const currentHashedPw = await SELECT.FindPassword(userId);
         console.log("currentHashedPw : ", currentHashedPw);
 
         // 기존 비밀번호와 새 비밀번호 비교
@@ -24,13 +20,10 @@ exports.handler = async (event) => {
             };
         } else {
             // 새 비밀번호 암호화
-            const salt = await bcrypt.genSalt(10);
-            const hashPw = await bcrypt.hash(newPw, salt);
+            const hashPw = await hashPassword(newPw);
 
             // 새 비밀번호 업데이트
-            const updateQuery = "UPDATE member SET userPw = ? WHERE userId = ?";
-            const updateValues = [hashPw, userId];
-            await pool.promise().query(updateQuery, updateValues);
+            await UPDATE.UpdatePw(hashPw, userId);
 
             return {
                 statusCode: 200,

@@ -1,5 +1,4 @@
-const pool = require('/opt/nodejs/db');
-const bcrypt = require('bcryptjs');
+const { hashPassword, INSERT } = require('/opt/nodejs/query');
 
 exports.handler = async (event) => {
     const { userId, userPw, userName, userPhone, userBirthDate } = JSON.parse(event.body);
@@ -16,13 +15,10 @@ exports.handler = async (event) => {
         const birthDate = new Date(userBirthDate).toISOString().split('T')[0];
 
         // 비밀번호 암호화
-        const salt = await bcrypt.genSalt(10);
-        const hashPw = await bcrypt.hash(userPw, salt);
+        const hashPw = await hashPassword(userPw);
 
         // 데이터베이스에 정보 등록
-        const query = "INSERT INTO member(userId, userPw, userName, userPhone, userBirthDate, created_at) VALUES(?,?,?,?,?,CURRENT_TIMESTAMP)";
-        const values = [userId, hashPw, userName, userPhone, birthDate];
-        await pool.promise().query(query, values);
+        await INSERT.InsertUser(userId, hashPw, userName, userPhone, birthDate);
 
         return {
             statusCode: 200,

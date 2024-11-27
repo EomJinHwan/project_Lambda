@@ -1,16 +1,14 @@
-const pool = require('/opt/nodejs/db');
+const { SELECT } = require('/opt/nodejs/query');
 
 exports.handler = async (event) => {
     const userId = event.pathParameters?.userId;
     console.log(`userId : ${userId}`);
 
     try {
-        const query = "SELECT userId, ip_address, history FROM login_history WHERE userId = ?"
+        // 각 사용자별 정보 불러오기
+        const result = await SELECT.GetUserInfo(userId);
 
-        const [results] = await pool.promise().query(query, [userId]);
-        console.log(results);
-
-        if (results.length === 0) {
+        if (result.length === 0) {
             console.log(`${userId} 님에 대한 정보가 없습니다`);
             return {
                 statusCode: 400,
@@ -27,7 +25,7 @@ exports.handler = async (event) => {
                 body: JSON.stringify({
                     success: true,
                     message: `${userId} 회원에 대한 정보`,
-                    results: results
+                    results: result
                 })
             }
         }

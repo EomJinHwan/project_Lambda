@@ -1,13 +1,11 @@
-// index.js
-const pool = require('/opt/nodejs/db');
+const { SELECT } = require('/opt/nodejs/query');
 
 exports.handler = async (event) => {
     const { userId, userPhone } = JSON.parse(event.body);
 
     try {
-        const query = "SELECT userId FROM member WHERE userId=? AND userPhone=?";
-        const values = [userId, userPhone];
-        const [result] = await pool.promise().query(query, values);
+        // 아이디와 폰번호로 맞는 아이디 찾기
+        const result = await SELECT.FindUser(userId, userPhone, null);
 
         if (result.length === 0) {
             return {

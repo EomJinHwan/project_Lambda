@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
-const pool = require('/opt/nodejs/db');
 const requestIp = require('request-ip');
+const { INSERT, SELECT } = require('/opt/nodejs/query');
 
 exports.handler = async (event) => {
     const { userId, userPw } = JSON.parse(event.body);
@@ -9,9 +9,7 @@ exports.handler = async (event) => {
 
     try {
         // 사용자 정보 조회 (비밀번호는 해시로 저장됨)
-        const query = 'SELECT userPw, userName FROM member WHERE userId = ?'
-        const values = [userId]
-        const [result] = await pool.promise().query(query, values);
+        const result = await SELECT.GetUser(userId);
 
         // 아이디 없음
         if (result.length === 0) {
@@ -25,15 +23,12 @@ exports.handler = async (event) => {
             console.log('isMatch: ', isMatch)
 
             if (isMatch) {
-                const query = "INSERT INTO login_history (userId, ip_address, history) VALUES (?, ?, CURRENT_TIMESTAMP)";
-                const values = [userId, ip_address];
-                await pool.promise().query(query, values);
+                await INSERT.InsertLoginHistory(userId, ip_address);
                 
                 return {
                     statusCode: 200,
                     body: JSON.stringify({ success: true, message: "로그인 성공", name: user.userName, id: userId }),
                 }
-
             } else {
                 return {
                     statusCode: 401,

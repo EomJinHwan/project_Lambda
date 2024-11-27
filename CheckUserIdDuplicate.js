@@ -1,20 +1,19 @@
-const pool = require('/opt/nodejs/db');
+const { SELECT } = require('/opt/nodejs/query');
 
 exports.handler = async (event) => {
   try {
     const userId = event.pathParameters?.userId;
     console.log(`userId: ${userId}`);
 
-    const query = "SELECT userId FROM member WHERE userId = ?";
-    const values = [userId]
-    const [result] = await pool.promise().query(query, values);
+    // 아이디 중복 여부 확인
+    const result = await SELECT.FindUser(userId);
 
     if (result.length === 0) {
       return {
         statusCode: 200,
         body: JSON.stringify({ success: true, message: '사용 가능한 아이디입니다' }),
       };
-    } else {   
+    } else {
       return {
         statusCode: 200,
         body: JSON.stringify({ success: false, message: '사용 불가능한 아이디입니다' }),

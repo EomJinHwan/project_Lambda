@@ -1,5 +1,4 @@
-// index.js
-const pool = require('/opt/nodejs/db');
+const { SELECT } = require('/opt/nodejs/query');
 
 exports.handler = async (event) => {
     const { userBirthDate, userPhone } = JSON.parse(event.body);
@@ -7,11 +6,10 @@ exports.handler = async (event) => {
     try {
         const birthDate = `${userBirthDate.slice(0, 4)}-${userBirthDate.slice(4, 6)}-${userBirthDate.slice(6, 8)}`;
         console.log("birthDate : ", birthDate);
-        
+
         if (birthDate) {
-            const query = "SELECT userId FROM member WHERE userBirthDate=? AND userPhone=?";
-            const values = [userBirthDate, userPhone];
-            const [result] = await pool.promise().query(query, values);
+            // 생일과 폰번호로 아이디 찾기
+            const result = await SELECT.FindUser(null, userPhone, birthDate);
 
             if (result.length === 0) { // 아이디가 없을경우
                 return {
