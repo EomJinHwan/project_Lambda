@@ -2,9 +2,9 @@
 const mysql = require("mysql2");
 
 const pool = mysql.createPool({
-    host: "dasom-project.c1owmo6m6xgg.ap-northeast-2.rds.amazonaws.com",
+    host: "host",
     user: "dasom",
-    password: "dasom0628!",
+    password: "password",
     database: "dasom_db",
     port: "3306",
 })
