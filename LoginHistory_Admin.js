@@ -1,4 +1,11 @@
-const { SELECT } = require('/opt/nodejs/query');
+const Sequelize = require('sequelize');
+const config = require('/opt/nodejs/config/config.json');
+const db = require('/opt/nodejs/models');
+
+const sequelize = new Sequelize('config.database', 'config.username', 'config.password', {
+    host: 'config.host',
+    dialect: 'mysql'
+});
 
 exports.handler = async (event) => {
     const userId = event.pathParameters?.userId;
@@ -6,7 +13,10 @@ exports.handler = async (event) => {
 
     try {
         // 각 사용자별 정보 불러오기
-        const result = await SELECT.GetUserInfo(userId);
+        const result = await db.LoginHistory.findAll({
+            attributes: ['userId', 'ip_address', 'history'],
+            where: { userId: userId }
+        });
 
         if (result.length === 0) {
             console.log(`${userId} 님에 대한 정보가 없습니다`);

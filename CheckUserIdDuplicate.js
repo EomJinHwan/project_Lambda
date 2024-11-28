@@ -1,14 +1,20 @@
-const { SELECT } = require('/opt/nodejs/query');
+const Sequelize = require('sequelize');
+const config = require('/opt/nodejs/config/config.json');
+const db = require('/opt/nodejs/models');
+
+const sequelize = new Sequelize('config.database', 'config.username', 'config.password', {
+  host: 'config.host',
+  dialect: 'mysql'
+});
 
 exports.handler = async (event) => {
   try {
     const userId = event.pathParameters?.userId;
-    console.log(`userId: ${userId}`);
 
     // 아이디 중복 여부 확인
-    const result = await SELECT.FindUser(userId);
+    const result = await db.Member.findOne({ where: { userId: userId } });
 
-    if (result.length === 0) {
+    if (!result) {
       return {
         statusCode: 200,
         body: JSON.stringify({ success: true, message: '사용 가능한 아이디입니다' }),

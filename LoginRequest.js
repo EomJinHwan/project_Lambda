@@ -1,6 +1,13 @@
 const bcrypt = require('bcryptjs');
 const requestIp = require('request-ip');
-const { INSERT, SELECT } = require('/opt/nodejs/query');
+const Sequelize = require('sequelize');
+const config = require('/opt/nodejs/config/config.json');
+const db = require('/opt/nodejs/models');
+
+const sequelize = new Sequelize('config.database', 'config.username', 'config.password', {
+    host: 'config.host',
+    dialect: 'mysql'
+});
 
 exports.handler = async (event) => {
     const { userId, userPw } = JSON.parse(event.body);
@@ -9,22 +16,28 @@ exports.handler = async (event) => {
 
     try {
         // 사용자 정보 조회 (비밀번호는 해시로 저장됨)
-        const result = await SELECT.GetUser(userId);
+        const result = await db.Member.findOne({
+            attributes: ['userPw', 'userName'],
+            where: { userId: userId }
+        });
 
         // 아이디 없음
-        if (result.length === 0) {
+        if (!result) {
             return {
                 statusCode: 401,
                 body: JSON.stringify({ success: false, message: "조건에 맞는 아이디가 없습니다" }),
             };
         } else { // 아아디 있음
-            const user = result[0];
+            const user = result;
             const isMatch = await bcrypt.compare(userPw, user.userPw);
             console.log('isMatch: ', isMatch)
 
             if (isMatch) {
-                await INSERT.InsertLoginHistory(userId, ip_address);
-                
+                await db.LoginHistory.create({
+                    userId: userId,
+                    ip_address: ip_address,
+                });
+
                 return {
                     statusCode: 200,
                     body: JSON.stringify({ success: true, message: "로그인 성공", name: user.userName, id: userId }),

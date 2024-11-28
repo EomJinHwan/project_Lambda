@@ -1,4 +1,11 @@
-const { SELECT } = require('/opt/nodejs/query');
+const Sequelize = require('sequelize');
+const config = require('/opt/nodejs/config/config.json');
+const db = require('/opt/nodejs/models');
+
+const sequelize = new Sequelize('config.database', 'config.username', 'config.password', {
+    host: 'config.host',
+    dialect: 'mysql'
+});
 
 exports.handler = async (event) => {
     const { userBirthDate, userPhone } = JSON.parse(event.body);
@@ -9,9 +16,13 @@ exports.handler = async (event) => {
 
         if (birthDate) {
             // 생일과 폰번호로 아이디 찾기
-            const result = await SELECT.FindUser(null, userPhone, birthDate);
+            const result = await db.Member.findOne({
+                attributes: ['userId'],
+                where: { userBirthDate: userBirthDate, userPhone: userPhone }
+            });
+            console.log("result : ", result);
 
-            if (result.length === 0) { // 아이디가 없을경우
+            if (!result) { // 아이디가 없을경우
                 return {
                     statusCode: 400,
                     body: JSON.stringify({ success: false, message: "조건에 맞는 아이디가 없습니다" })
@@ -19,7 +30,7 @@ exports.handler = async (event) => {
             } else { // 아이디가 있을경우
                 return {
                     statusCode: 200,
-                    body: JSON.stringify({ success: true, message: "조건에 맞는 아이디가 있습니다", userId: result[0].userId })
+                    body: JSON.stringify({ success: true, message: "조건에 맞는 아이디가 있습니다", userId: result.userId })
                 }
             }
         } else {
