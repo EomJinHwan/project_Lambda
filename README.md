@@ -1,15 +1,11 @@
-이전 람다 함수에서
-
-쿼리문 모듈화를 위한 query-layer추가
-
-본문코드에서 쿼리문 삭제
-
-layer query.js 파일에서 쿼리문 import 해서 사용
-
-FindUser 사용시 변수순서 주의 userId, userPhone, userBirthDate 고정
-
-사용 안하는건 null로 표시해줘야 정상 작동
-
-ex) userId 사용 안하면 (null, userPhone, userBirthDate)
+sequelize를 사용하여 ORM 객체 관계 매핑
 
 naver, sms 제외
+
+findAll - 결과값이 무조건 배열로 옴
+result.legnth로 비교해야함, 값이 없으면 빈배열 []이 오기때문
+result[0].@로 값 꺼내올 수 있음
+
+findOne - 결과값이 단일 값으로 옴
+result 로 비교가능, 값이 없으면 null 반환
+result.@로 값 꺼내올 수 있음
