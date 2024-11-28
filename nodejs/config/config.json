@@ -1,23 +1,23 @@
 {
   "development": {
     "username": "dasom",
-    "password": "dasom0628!",
+    "password": "password",
     "database": "dasom_db",
-    "host": "127.0.0.1", 
+    "host": "host", 
     "dialect": "mysql"
   },
   "test": {
     "username": "dasom",
-    "password": "비밀번호",
+    "password": "password",
     "database": "dasom_db",
-    "host": "127.0.0.1", 
+    "host": "host", 
     "dialect": "mysql"
   },
   "production": {
     "username": "dasom",
-    "password": "dasom0628!",
+    "password": "password",
     "database": "dasom_db",
-    "host": "dasom-project.c1owmo6m6xgg.ap-northeast-2.rds.amazonaws.com", 
+    "host": "host", 
     "dialect": "mysql"
   }
 }
